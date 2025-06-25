@@ -1,0 +1,89 @@
+from datetime import datetime, timedelta, date
+import re
+import time
+import pytz
+
+birthdate = input("Enter your birthdate (YYYY-MM-DD): ")
+birth = datetime.strptime(birthdate, "%Y-%m-%d")
+today = datetime.today()
+years = today.year - birth.year
+months = today.month - birth.month
+days = today.day - birth.day
+if days < 0:
+    months -= 1
+    days += 30
+if months < 0:
+    years -= 1
+    months += 12
+print(f"You are {years} years, {months} months, and {days} days old.")
+
+birth_month = int(input("Enter your birth month (1-12): "))
+birth_day = int(input("Enter your birth day (1-31): "))
+today = date.today()
+current_year = today.year
+next_birthday = date(current_year, birth_month, birth_day)
+if next_birthday < today:
+    next_birthday = date(current_year + 1, birth_month, birth_day)
+days_remaining = (next_birthday - today).days
+print(f"Days until next birthday: {days_remaining}")
+
+current_time = input("Enter current date and time (YYYY-MM-DD HH:MM): ")
+duration_hours = int(input("Enter meeting duration (hours): "))
+duration_minutes = int(input("Enter meeting duration (minutes): "))
+start = datetime.strptime(current_time, "%Y-%m-%d %H:%M")
+end = start + timedelta(hours=duration_hours, minutes=duration_minutes)
+print("Meeting ends at:", end.strftime("%Y-%m-%d %H:%M"))
+
+dt_input = input("Enter date and time (YYYY-MM-DD HH:MM): ")
+from_zone = input("Enter your timezone (e.g., 'US/Eastern'): ")
+to_zone = input("Enter target timezone (e.g., 'Asia/Tokyo'): ")
+local = pytz.timezone(from_zone)
+target = pytz.timezone(to_zone)
+naive = datetime.strptime(dt_input, "%Y-%m-%d %H:%M")
+local_dt = local.localize(naive)
+target_dt = local_dt.astimezone(target)
+print("Converted time:", target_dt.strftime("%Y-%m-%d %H:%M %Z%z"))
+
+target = input("Enter future date and time (YYYY-MM-DD HH:MM:SS): ")
+end_time = datetime.strptime(target, "%Y-%m-%d %H:%M:%S")
+while True:
+    now = datetime.now()
+    remaining = end_time - now
+    if remaining.total_seconds() <= 0:
+        print("Time's up!")
+        break
+    print("Time remaining:", remaining)
+    time.sleep(1)
+
+email = input("Enter an email address: ")
+pattern = r"^[\w\.-]+@[\w\.-]+\.\w{2,}$"
+if re.match(pattern, email):
+    print("Valid email.")
+else:
+    print("Invalid email.")
+
+number = input("Enter a 10-digit phone number: ").strip()
+if len(number) == 10 and number.isdigit():
+    formatted = f"({number[:3]}) {number[3:6]}-{number[6:]}"
+    print("Formatted number:", formatted)
+else:
+    print("Invalid number.")
+
+password = input("Enter a password: ")
+if (len(password) >= 8 and
+    re.search(r"[A-Z]", password) and
+    re.search(r"[a-z]", password) and
+    re.search(r"[0-9]", password)):
+    print("Strong password.")
+else:
+    print("Weak password. Must include at least 8 characters, an uppercase letter, a lowercase letter, and a number.")
+
+text = """This is a sample text. This text is just a test."""
+word = input("Enter word to search: ")
+positions = [i for i in range(len(text)) if text.startswith(word, i)]
+print(f"Found '{word}' at positions: {positions}")
+
+text = input("Enter text: ")
+pattern = r"\b\d{4}-\d{2}-\d{2}\b"
+dates = re.findall(pattern, text)
+print("Dates found:", dates)
